@@ -93,7 +93,12 @@ Then call `start` to kick it off:
 
 As the `AnyEvent` event loop progresses, the command will be executed on
 remote nodes. Output and results of that command on each node will be posted to
-callbacks you can optionally provde to the constructor.
+callbacks you can optionally provide to the constructor.
+
+When calling the constructor, you can include the `consul_args` option with an
+arrayref as a value. Anything in that arrayref will be passed as-is to the
+`AnyEvent::Consul` constructor. Use this to set the various client options
+documented in [AnyEvent::Consul](https://metacpan.org/pod/AnyEvent::Consul) and [Consul](https://metacpan.org/pod/Consul).
 
 # CALLBACKS
 

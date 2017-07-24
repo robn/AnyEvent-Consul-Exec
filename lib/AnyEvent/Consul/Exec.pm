@@ -12,7 +12,7 @@ use AnyEvent;
 use AnyEvent::Consul;
 use JSON::MaybeXS;
 use Type::Params qw(compile);
-use Types::Standard qw(ClassName Dict Str Optional CodeRef slurpy);
+use Types::Standard qw(ClassName Dict Str Optional CodeRef ArrayRef slurpy);
 
 my @callbacks = map { "on_$_" } qw(submit ack output exit done error);
 
@@ -21,11 +21,13 @@ sub new {
     ClassName,
     slurpy Dict[
       command => Str,
+      consul_args => Optional[ArrayRef],
       map { $_ => Optional[CodeRef] } @callbacks,
     ],
   );
   my ($class, $self) = $check->(@_);
   map { $self->{$_} //= sub {} } @callbacks;
+  $self->{consul_args} //= [];
   return bless $self, $class;
 }
 
@@ -138,7 +140,7 @@ sub _cleanup {
 
 sub start {
   my ($self) = @_;
-  $self->{_c} = AnyEvent::Consul->new(error_cb => sub {
+  $self->{_c} = AnyEvent::Consul->new($self->{consul_args}->@*, error_cb => sub {
     my ($err) = @_;
     $self->_cleanup(sub { $self->{on_error}->($err) });
   });
@@ -247,7 +249,12 @@ Then call C<start> to kick it off:
 
 As the C<AnyEvent> event loop progresses, the command will be executed on
 remote nodes. Output and results of that command on each node will be posted to
-callbacks you can optionally provde to the constructor.
+callbacks you can optionally provide to the constructor.
+
+When calling the constructor, you can include the C<consul_args> option with an
+arrayref as a value. Anything in that arrayref will be passed as-is to the
+C<AnyEvent::Consul> constructor. Use this to set the various client options
+documented in L<AnyEvent::Consul> and L<Consul>.
 
 =head1 CALLBACKS
 
