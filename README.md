@@ -101,31 +101,31 @@ callbacks you can optionally provde to the constructor.
 the command is run on each node and its output and exit code returned. Set this
 up by passing code refs to the constructor:
 
-- on\_submit
+- `on_submit`
 
     Called when the command is fully accepted by Consul (ie in the KV store, ready
     for nodes to find).
 
-- on\_ack($node)
+- `on_ack($node)`
 
     Called for each node as they notice the command has been entered into the KV
     store and start running it.
 
-- on\_output($node, $output)
+- `on_output($node, $output)`
 
     Called when a command emits some output. May be called multiple times per node,
     or not at all if the command has no output.
 
-- on\_exit($node, $rc)
+- `on_exit($node, $rc)`
 
     Called when a command completes.
 
-- on\_done
+- `on_done`
 
     Called when all remote commands have completed. After this call, the object is
     no longer useful.
 
-- on\_error($err)
+- `on_error($err)`
 
     Called if an error occurs while communicating with Consul (local agent
     unavailable, quorum loss, etc). After this call, the object is no longer

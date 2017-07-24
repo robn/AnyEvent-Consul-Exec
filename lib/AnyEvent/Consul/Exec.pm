@@ -257,31 +257,31 @@ up by passing code refs to the constructor:
 
 =over 4
 
-=item * on_submit
+=item * C<on_submit>
 
 Called when the command is fully accepted by Consul (ie in the KV store, ready
 for nodes to find).
 
-=item * on_ack($node)
+=item * C<on_ack($node)>
 
 Called for each node as they notice the command has been entered into the KV
 store and start running it.
 
-=item * on_output($node, $output)
+=item * C<on_output($node, $output)>
 
 Called when a command emits some output. May be called multiple times per node,
 or not at all if the command has no output.
 
-=item * on_exit($node, $rc)
+=item * C<on_exit($node, $rc)>
 
 Called when a command completes.
 
-=item * on_done
+=item * C<on_done>
 
 Called when all remote commands have completed. After this call, the object is
 no longer useful.
 
-=item * on_error($err)
+=item * C<on_error($err)>
 
 Called if an error occurs while communicating with Consul (local agent
 unavailable, quorum loss, etc). After this call, the object is no longer
