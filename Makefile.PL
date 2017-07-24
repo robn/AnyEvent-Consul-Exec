@@ -27,9 +27,12 @@ my %WriteMakefileArgs = (
     "strict" => 0,
     "warnings" => 0
   },
+  "TEST_REQUIRES" => {
+    "Test::More" => 0
+  },
   "VERSION" => "0.001",
   "test" => {
-    "TESTS" => ""
+    "TESTS" => "t/*.t"
   }
 );
 
@@ -39,6 +42,7 @@ my %FallbackPrereqs = (
   "AnyEvent::Consul" => 0,
   "Consul" => "0.021",
   "JSON::MaybeXS" => 0,
+  "Test::More" => 0,
   "Type::Params" => 0,
   "Types::Standard" => 0,
   "experimental" => 0,
