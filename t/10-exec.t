@@ -16,6 +16,8 @@ my $tc = eval { Test::Consul->start };
 
 SKIP: {
   skip "consul test environment not available", 5, unless $tc;
+
+  my ($submit, $ack, $output, $exit, $done);
   
   my $cv = AE::cv;
 
@@ -25,37 +27,40 @@ SKIP: {
     command => 'uptime',
 
     on_submit => sub {
-      ok 1, "job submitted";
+      $submit = 1;
     },
 
     on_ack => sub {
-      my ($node) = @_;
-      ok 1, "$node: ack";
+      $ack = 1;
     },
 
     on_output => sub {
-      my ($node, $output) = @_;
-      ok 1, "$node: output";
+      $output = 1;
     },
 
     on_exit => sub {
-      my ($node, $rc) = @_;
-      ok 1, "$node: exit: $rc";
+      $exit = 1;
     },
 
     on_done => sub {
-      ok 1, "job done";
+      $done = 1;
       $cv->send;
     },
 
     on_error => sub {
       my ($err) = @_;
-      ok 1, "error: $err";
+      die $err;
     },
   );
 
   $e->start;
   $cv->recv;
+
+  ok $submit, "job submitted";
+  ok $ack, "acknowledged";
+  ok $output, "received output";
+  ok $exit, "exited";
+  ok $done, "job done";
 }
 
 done_testing;
