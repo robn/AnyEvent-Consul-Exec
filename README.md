@@ -108,6 +108,10 @@ The `wait` option will tell the target agent how long to wait, without
 receiving output, before killing the command. This does the same thing as the
 `-wait` option to `consul exec`.
 
+The `node`, `service` and `tag` each take basic regexes that will be used to
+match nodes to run the command on. See the corresponding options to `consul exec`
+for more info.
+
 # CALLBACKS
 
 `AnyEvent::Consul::Exec` will arrange for various callbacks to be called as

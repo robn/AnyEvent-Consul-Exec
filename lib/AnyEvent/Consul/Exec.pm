@@ -22,6 +22,9 @@ sub new {
     slurpy Dict[
       command => Str,
       wait    => Optional[Int],
+      node    => Optional[Str],
+      service => Optional[Str],
+      tag     => Optional[Str],
       consul_args => Optional[ArrayRef],
       map { $_ => Optional[CodeRef] } @callbacks,
     ],
@@ -90,6 +93,7 @@ sub _wait_responses {
     },
   );
 }
+
 sub _fire_event {
   my ($self) = @_;
   my $payload = {
@@ -99,6 +103,9 @@ sub _fire_event {
   $self->{_c}->event->fire(
     "_rexec",
     payload => encode_json($payload),
+    $self->{node}    ? (node    => $self->{node})    : (),
+    $self->{service} ? (service => $self->{service}) : (),
+    $self->{tag}     ? (tag     => $self->{tag})     : (),
     cb => sub { $self->_wait_responses(0) },
   );
 }
@@ -265,6 +272,10 @@ documented in L<AnyEvent::Consul> and L<Consul>.
 The C<wait> option will tell the target agent how long to wait, without
 receiving output, before killing the command. This does the same thing as the
 C<-wait> option to C<consul exec>.
+
+The C<node>, C<service> and C<tag> each take basic regexes that will be used to
+match nodes to run the command on. See the corresponding options to C<consul exec>
+for more info.
 
 =head1 CALLBACKS
 
