@@ -15,6 +15,10 @@ AnyEvent::Consul::Exec - Execute a remote command across a Consul cluster
         
         # command to run
         command => 'uptime',
+
+        # number of seconds target will wait for command, without sending
+        # output, before terminating it
+        wait => 2,
         
         # called once job is submitted to Consul
         on_submit => sub {
@@ -99,6 +103,10 @@ When calling the constructor, you can include the `consul_args` option with an
 arrayref as a value. Anything in that arrayref will be passed as-is to the
 `AnyEvent::Consul` constructor. Use this to set the various client options
 documented in [AnyEvent::Consul](https://metacpan.org/pod/AnyEvent::Consul) and [Consul](https://metacpan.org/pod/Consul).
+
+The `wait` option will tell the target agent how long to wait, without
+receiving output, before killing the command. This does the same thing as the
+`-wait` option to `consul exec`.
 
 # CALLBACKS
 

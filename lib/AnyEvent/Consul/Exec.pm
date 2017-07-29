@@ -12,7 +12,7 @@ use AnyEvent;
 use AnyEvent::Consul;
 use JSON::MaybeXS;
 use Type::Params qw(compile);
-use Types::Standard qw(ClassName Dict Str Optional CodeRef ArrayRef slurpy);
+use Types::Standard qw(ClassName Dict Str Optional CodeRef ArrayRef Int slurpy);
 
 my @callbacks = map { "on_$_" } qw(submit ack output exit done error);
 
@@ -21,12 +21,14 @@ sub new {
     ClassName,
     slurpy Dict[
       command => Str,
+      wait    => Optional[Int],
       consul_args => Optional[ArrayRef],
       map { $_ => Optional[CodeRef] } @callbacks,
     ],
   );
   my ($class, $self) = $check->(@_);
   map { $self->{$_} //= sub {} } @callbacks;
+  $self->{wait} //= 2;
   $self->{consul_args} //= [];
   return bless $self, $class;
 }
@@ -105,7 +107,7 @@ sub _setup_job {
   my ($self) = @_;
   my $job = {
     Command => $self->{command},
-    Wait    => 2000000000,          # XXX
+    Wait    => $self->{wait} * 1_000_000_000, # nanoseconds
   };
   $self->{_c}->kv->put("_rexec/$self->{_sid}/job", encode_json($job), cb => sub { $self->_fire_event });
 }
@@ -171,6 +173,10 @@ AnyEvent::Consul::Exec - Execute a remote command across a Consul cluster
         
         # command to run
         command => 'uptime',
+
+        # number of seconds target will wait for command, without sending
+        # output, before terminating it
+        wait => 2,
         
         # called once job is submitted to Consul
         on_submit => sub {
@@ -255,6 +261,10 @@ When calling the constructor, you can include the C<consul_args> option with an
 arrayref as a value. Anything in that arrayref will be passed as-is to the
 C<AnyEvent::Consul> constructor. Use this to set the various client options
 documented in L<AnyEvent::Consul> and L<Consul>.
+
+The C<wait> option will tell the target agent how long to wait, without
+receiving output, before killing the command. This does the same thing as the
+C<-wait> option to C<consul exec>.
 
 =head1 CALLBACKS
 

@@ -1,5 +1,6 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+- Add the 'wait' option
 
 0.001     2017-07-25 01:23:46+10:00 Australia/Melbourne
