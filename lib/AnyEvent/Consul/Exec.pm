@@ -7,7 +7,7 @@ use warnings;
 use strict;
 use experimental qw(postderef);
 
-use Consul 0.021;
+use Consul 0.022;
 use AnyEvent;
 use AnyEvent::Consul;
 use JSON::MaybeXS;
@@ -116,28 +116,40 @@ sub _setup_job {
     Command => $self->{command},
     Wait    => $self->{wait} * 1_000_000_000, # nanoseconds
   };
-  $self->{_c}->kv->put("_rexec/$self->{_sid}/job", encode_json($job), cb => sub { $self->_fire_event });
+  $self->{_c}->kv->put(
+    "_rexec/$self->{_sid}/job",
+    encode_json($job),
+    acquire => $self->{_sid},
+    cb => sub { $self->_fire_event });
 }
 
 sub _start_session {
   my ($self) = @_;
-  $self->{_c}->session->create(Consul::Session->new(name => "exec", ttl => "10s"), cb => sub {
-    $self->{_sid} = shift;
-    $self->{_refresh_guard} = AnyEvent->timer(after => "5s", interval => "5s", cb => sub {
-      $self->{_c}->session->renew($self->{_sid});
-    });
-    $self->_setup_job;
-  });
+  $self->{_c}->session->create(
+    Consul::Session->new(
+      name     => 'Remote exec',
+      behavior => 'delete',
+      ttl      => "15s"),
+    cb => sub {
+      $self->{_sid} = shift;
+      $self->{_refresh_guard} = AnyEvent->timer(after => "5s", interval => "5s", cb => sub {
+        $self->{_c}->session->renew($self->{_sid});
+      });
+      $self->_setup_job;
+    },
+  );
 }
 
 sub _cleanup {
   my ($self, $cb) = @_;
   delete $self->{_refresh_guard};
   if ($self->{_sid}) {
-    $self->{_c}->kv->delete("_rexec/$self->{_sid}", recurse => 1, cb => sub {
-      delete $self->{_sid};
-      delete $self->{_c};
-      $cb->();
+    $self->{_c}->session->destroy($self->{_sid}, cb => sub {
+      $self->{_c}->kv->delete("_rexec/$self->{_sid}", recurse => 1, cb => sub {
+        delete $self->{_sid};
+        delete $self->{_c};
+        $cb->();
+      });
     });
   }
   else {
