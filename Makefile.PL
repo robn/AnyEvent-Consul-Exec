@@ -28,7 +28,7 @@ my %WriteMakefileArgs = (
     "warnings" => 0
   },
   "TEST_REQUIRES" => {
-    "Test::Consul" => 0,
+    "Test::Consul" => "0.009",
     "Test::Exception" => 0,
     "Test::More" => 0
   },
@@ -44,7 +44,7 @@ my %FallbackPrereqs = (
   "AnyEvent::Consul" => 0,
   "Consul" => "0.022",
   "JSON::MaybeXS" => 0,
-  "Test::Consul" => 0,
+  "Test::Consul" => "0.009",
   "Test::Exception" => 0,
   "Test::More" => 0,
   "Type::Params" => 0,

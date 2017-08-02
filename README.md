@@ -112,6 +112,11 @@ The `node`, `service` and `tag` each take basic regexes that will be used to
 match nodes to run the command on. See the corresponding options to `consul exec`
 for more info.
 
+The `dc` option can take the name of the datacenter to run the command in. The
+exec mechanism is limited to a single datacentre. This option will cause
+[AnyEvent::Consul::Exec](https://metacpan.org/pod/AnyEvent::Consul::Exec) to find a Consul agent in the named datacenter and
+execute the command there (without it, the local node is used).
+
 # CALLBACKS
 
 `AnyEvent::Consul::Exec` will arrange for various callbacks to be called as
