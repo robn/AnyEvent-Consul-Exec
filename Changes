@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.003     2017-08-06 10:11:42+10:00 Australia/Melbourne
 - Improve session and KV acquisition and cleanup
 - Support for running commands in remote datacenters
 
