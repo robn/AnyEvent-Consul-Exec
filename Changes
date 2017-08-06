@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+- Enable remote exec in Test::Consul (0.011)
 
 0.003     2017-08-06 10:11:42+10:00 Australia/Melbourne
 - Improve session and KV acquisition and cleanup
