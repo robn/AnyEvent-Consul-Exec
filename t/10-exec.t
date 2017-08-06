@@ -50,8 +50,8 @@ SKIP: {
     },
 
     on_error => sub {
-      my ($err) = @_;
-      die $err;
+      diag @_;
+      $cv->send;
     },
   );
 

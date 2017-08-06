@@ -44,7 +44,7 @@ SKIP: {
     },
 
     on_error => sub {
-      warn @_;
+      diag @_;
       $cv->send;
     },
   );
