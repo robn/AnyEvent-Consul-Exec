@@ -102,7 +102,7 @@ callbacks you can optionally provide to the constructor.
 When calling the constructor, you can include the `consul_args` option with an
 arrayref as a value. Anything in that arrayref will be passed as-is to the
 `AnyEvent::Consul` constructor. Use this to set the various client options
-documented in [AnyEvent::Consul](https://metacpan.org/pod/AnyEvent::Consul) and [Consul](https://metacpan.org/pod/Consul).
+documented in [AnyEvent::Consul](https://metacpan.org/pod/AnyEvent%3A%3AConsul) and [Consul](https://metacpan.org/pod/Consul).
 
 The `wait` option will tell the target agent how long to wait, without
 receiving output, before killing the command. This does the same thing as the
@@ -112,9 +112,19 @@ The `node`, `service` and `tag` each take basic regexes that will be used to
 match nodes to run the command on. See the corresponding options to `consul exec`
 for more info.
 
+If you specify &lt;min\_node\_count>, at \*least\* this many nodes must report in
+before we consider a job done. Without this, some nodes might report back
+results before we've seen an ack from the others, and your job may prematurely
+be canceled on those other nodes, or your on\_done callback will be called
+prematurely. This is most useful if `node` is a regex that matches an
+explicit amount of nodes, for example:
+
+    node => /^(host1|host2|host3)$/,
+    min_node_count => 3,
+
 The `dc` option can take the name of the datacenter to run the command in. The
 exec mechanism is limited to a single datacentre. This option will cause
-[AnyEvent::Consul::Exec](https://metacpan.org/pod/AnyEvent::Consul::Exec) to find a Consul agent in the named datacenter and
+[AnyEvent::Consul::Exec](https://metacpan.org/pod/AnyEvent%3A%3AConsul%3A%3AExec) to find a Consul agent in the named datacenter and
 execute the command there (without it, the local node is used).
 
 # CALLBACKS
@@ -180,7 +190,11 @@ public review and contribution under the terms of the license.
 
 # AUTHORS
 
-- Rob N ★ <robn@robn.io>
+- Rob Norris <robn@despairlabs.com>
+
+# CONTRIBUTORS
+
+- Matthew Horsfall <wolfsage@gmail.com>
 
 # COPYRIGHT AND LICENSE
 

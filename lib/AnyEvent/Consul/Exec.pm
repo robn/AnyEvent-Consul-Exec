@@ -433,7 +433,17 @@ L<https://github.com/robn/AnyEvent-Consul-Exec>
 
 =item *
 
-Rob N ★ <robn@robn.io>
+Rob Norris <robn@despairlabs.com>
+
+=back
+
+=head1 CONTRIBUTORS
+
+=over 4
+
+=item *
+
+Matthew Horsfall <wolfsage@gmail.com>
 
 =back
 
